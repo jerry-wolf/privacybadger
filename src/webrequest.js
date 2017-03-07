@@ -176,6 +176,25 @@ function onBeforeSendHeaders(details) {
       newHeaders.push({name: "DNT", value: "1"});
       return {requestHeaders: newHeaders};
     } 
+  } else if (badger.isPrivacyBadgerEnabled(tabDomain)) {
+    var newHeaders = details.requestHeaders.filter(function(header) {
+      if (header.name.toLowerCase() == "cookie") {
+        if (header.value.search("__cfduid") > -1) {
+          console.log("HEADERS: ", details.requestHeaders);
+          return header.name.toLowerCase() != "cookie";
+        } else {
+          return header
+        }
+      } else {
+        return header
+      }
+      //return (header.name.toLowerCase() != "cookie" && header.name.toLowerCase() != "referer");
+    });
+    if (newHeaders != details.requestHeaders) {
+      newHeaders.push({name: "DNT", value: "1"});
+      console.log("NEW HEADERS: ", newHeaders);
+      return {requestHeaders: newHeaders};
+    }
   }
 
   // Still sending Do Not Track even if HTTP and cookie blocking are disabled
